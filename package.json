@@ -1,6 +1,6 @@
 {
-  "name": "@capacitor-community/barcode-scanner",
-  "version": "1.2.1",
+  "name": "@wisdomgarden/barcode-scanner",
+  "version": "1.0.0",
   "description": "A fast and efficient (QR) barcode scanner for Capacitor",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
@@ -14,7 +14,7 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
-  "author": "tafelnl",
+  "author": "wisdomgarden",
   "license": "MIT",
   "devDependencies": {
     "@capacitor/android": "^2.4.2",
@@ -64,12 +64,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DutchConcepts/capacitor-barcode-scanner.git"
+    "url": "git+https://github.com/WisdomGardenInc/barcode-scanner.git"
   },
-  "bugs": {
-    "url": "https://github.com/DutchConcepts/capacitor-barcode-scanner/issues"
-  },
-  "homepage": "https://github.com/DutchConcepts/capacitor-barcode-scanner#readme",
+  "homepage": "https://github.com/WisdomGardenInc/barcode-scanner.git#readme",
   "directories": {
     "example": "examples"
   },
