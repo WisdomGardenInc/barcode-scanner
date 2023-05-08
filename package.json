@@ -70,5 +70,7 @@
   "directories": {
     "example": "examples"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/node": "^14.14.2"
+  }
 }

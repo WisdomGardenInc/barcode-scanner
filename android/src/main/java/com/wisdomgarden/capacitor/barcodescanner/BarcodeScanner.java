@@ -1,4 +1,4 @@
-package com.dutchconcepts.capacitor.barcodescanner;
+package com.wisdomgarden.capacitor.barcodescanner;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -22,11 +22,11 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.ResultPoint;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.BarcodeView;
-import com.journeyapps.barcodescanner.DefaultDecoderFactory;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
+import com.wisdomgarden.barcodescanner.BarcodeCallback;
+import com.wisdomgarden.barcodescanner.BarcodeResult;
+import com.wisdomgarden.barcodescanner.BarcodeView;
+import com.wisdomgarden.barcodescanner.DefaultDecoderFactory;
+import com.wisdomgarden.barcodescanner.camera.CameraSettings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,6 +110,8 @@ public class BarcodeScanner extends Plugin implements BarcodeCallback {
                     // Bring the WebView in front of the BarcodeView
                     // This allows us to completely style the BarcodeView in HTML/CSS
                     bridge.getWebView().bringToFront();
+
+                    mBarcodeView.setOnScaleGestureListener(bridge.getWebView());
 
                     mBarcodeView.resume();
                 }
