@@ -461,9 +461,6 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
         if gestureRecognizer.state == .changed{
             // 设置缩放
             self.cameraControl.setZoomFactor(scale: gestureRecognizer.scale, velocity: gestureRecognizer.velocity)
-        } else if gestureRecognizer.state == .ended {
-            // 停止缩放动画
-            self.cameraControl.stopRamping()
         }
     }
 }
