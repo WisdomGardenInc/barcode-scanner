@@ -42,10 +42,48 @@ android {
     }
 }
 
+
+// 获取nexus 的账号和密码
+def getNexusInfo() {
+    def nexusName = System.getenv('NEXUS_NAME');
+    def nexusPassword = System.getenv('NEXUS_PASSWORD')
+    File secretPropsFile = project.rootProject.file('local.properties')
+    if (secretPropsFile.exists()) {
+        FileInputStream inputStream = null
+        try {
+            inputStream = new FileInputStream(secretPropsFile)
+            Properties p = new Properties()
+            p.load(inputStream)
+            nexusName = p.getProperty('NEXUS_NAME') ?: nexusName
+            nexusPassword = p.getProperty('NEXUS_PASSWORD') ?: nexusPassword
+        } catch (IOException e) {
+            throw new GradleException("Error reading file: ${secretPropsFile.absolutePath}", e)
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close()
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+    }
+    return [nexusName, nexusPassword]
+}
+
+def (nexusName, nexusPassword) = getNexusInfo();
+
 repositories {
     google()
     jcenter()
     mavenCentral()
+    maven {
+        url "http://nexus.tronclass.com.cn:8081/repository/wg"
+        credentials {
+            username nexusName ?: ''
+            password nexusPassword ?: ''
+        }
+    }
 }
 
 
@@ -56,6 +94,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation('com.wisdomgarden:zxing-android-embedded:1.0.0') { transitive = false }
+    implementation('com.wisdomgarden:zxing-android-embedded:1.1.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
 }

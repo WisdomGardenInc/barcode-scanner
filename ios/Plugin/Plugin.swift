@@ -4,10 +4,10 @@ import AVFoundation
 
 @objc(BarcodeScanner)
 public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
-
+    
     class CameraView: UIView {
         var videoPreviewLayer:AVCaptureVideoPreviewLayer?
-
+        
         func interfaceOrientationToVideoOrientation(_ orientation : UIInterfaceOrientation) -> AVCaptureVideoOrientation {
             switch (orientation) {
             case UIInterfaceOrientation.portrait:
@@ -22,7 +22,7 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
                 return AVCaptureVideoOrientation.portraitUpsideDown;
             }
         }
-
+        
         override func layoutSubviews() {
             super.layoutSubviews();
             if let sublayers = self.layer.sublayers {
@@ -30,7 +30,7 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
                     layer.frame = self.bounds;
                 }
             }
-
+            
             self.videoPreviewLayer?.connection?.videoOrientation = interfaceOrientationToVideoOrientation(UIApplication.shared.statusBarOrientation);
         }
         
@@ -59,6 +59,7 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
     var frontCamera: AVCaptureDevice?
     var backCamera: AVCaptureDevice?
     private var captureDeviceInput: AVCaptureDeviceInput?
+    private let cameraControl = CameraControl()
     
     var isScanning: Bool = false
     var shouldRunScan: Bool = false
@@ -154,7 +155,8 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
             if(backCamera == nil){
                 currentCamera = 1
             }
-            try self.createCaptureDeviceInput() 
+            try self.createCaptureDeviceInput()
+            self.cameraControl.setCaptureDeviceInput(self.captureDeviceInput)
             captureSession = AVCaptureSession()
             captureSession!.addInput(captureDeviceInput!)
             metaOutput = AVCaptureMetadataOutput()
@@ -204,7 +206,7 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
                 throw CaptureError.frontCameraUnavailable
             }
         }
-
+        
         do {
             self.captureDeviceInput = try AVCaptureDeviceInput(device: captureDevice)
         } catch let error as NSError {
@@ -216,7 +218,7 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
         // opposite of setupCamera
         
         if (self.captureSession != nil) {
-            resetZoomFactor();
+            self.cameraControl.resetZoomFactor();
             DispatchQueue.main.async {
                 self.captureSession!.stopRunning()
                 self.cameraView.removePreviewLayer()
@@ -368,6 +370,12 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
+    private func manualFocus(){
+        DispatchQueue.main.async {
+            self.cameraControl.manualFocus()
+        }
+    }
+    
     @objc func prepare(_ call: CAPPluginCall) {
         self.prepare()
         call.resolve()
@@ -443,70 +451,19 @@ public class BarcodeScanner: CAPPlugin, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
-    
-    // 缩放因子的最小和最大值
-    let minZoomFactor: CGFloat = 1.0
-    let maxZoomFactor: CGFloat = 10.0
-    
-    // 记录当前缩放因子
-    var currentZoomFactor: CGFloat = 1.0
-
-    // 重置缩放
-    func resetZoomFactor(){
-        guard let captureDevice = captureDeviceInput?.device else {
-            return
-        } 
-
-        // 设置缩放
-        do {
-            try captureDevice.lockForConfiguration()
-            captureDevice.videoZoomFactor = 1.0
-            captureDevice.unlockForConfiguration()
-        } catch {
-            print("Failed to set zoom factor")
-            return
-        }
-    }
-    
-    // 设置缩放因子
-    func setZoomFactor(factor: CGFloat, velocity: CGFloat) {     
-        guard let captureDevice = captureDeviceInput?.device else {
-            return
-        } 
-        
-        // 计算新的缩放，确保在[minZoomFactor, maxZoomFactor]范围内
-        let newZoomFactor = min(max(factor, minZoomFactor), maxZoomFactor)
-        guard newZoomFactor != currentZoomFactor else { return }
-
-        // Add zoom animation
-        let zoomAnimation = CABasicAnimation(keyPath: "videoZoomFactor")
-        zoomAnimation.fromValue = captureDevice.videoZoomFactor
-        zoomAnimation.toValue = newZoomFactor
-        zoomAnimation.duration = Double(abs(velocity))
-        self.captureVideoPreviewLayer?.add(zoomAnimation, forKey: "videoZoomFactor")
-
-        // Set new zoom factor
-        currentZoomFactor = newZoomFactor
-
-        // 设置缩放
-        do {
-            try captureDevice.lockForConfiguration()
-            captureDevice.videoZoomFactor = currentZoomFactor
-            captureDevice.unlockForConfiguration()
-        } catch {
-            print("Failed to set zoom factor")
-            return
-        }
+    @objc func scanClickFocus(_ call: CAPPluginCall){
+        self.manualFocus();
+        call.resolve();
     }
     
     // 处理缩放手势
     @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
         if gestureRecognizer.state == .changed{
-            print("currentZoomFactor",currentZoomFactor,gestureRecognizer.velocity)
-            // 计算新的缩放
-            let newZoomFactor = currentZoomFactor * gestureRecognizer.scale
             // 设置缩放
-            setZoomFactor(factor: newZoomFactor, velocity: gestureRecognizer.velocity)
+            self.cameraControl.setZoomFactor(scale: gestureRecognizer.scale, velocity: gestureRecognizer.velocity)
+        } else if gestureRecognizer.state == .ended {
+            // 停止缩放动画
+            self.cameraControl.stopRamping()
         }
     }
 }

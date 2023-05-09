@@ -37,6 +37,8 @@ import org.json.JSONException;
 @NativePlugin(permissionRequestCode = BarcodeScanner.REQUEST_CODE)
 public class BarcodeScanner extends Plugin implements BarcodeCallback {
 
+    private static final String LOG_TAG = "scanner";
+
     private BarcodeView mBarcodeView;
 
     private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -173,7 +175,7 @@ public class BarcodeScanner extends Plugin implements BarcodeCallback {
                     PluginCall call = getSavedCall();
 
                     if (call == null || mBarcodeView == null) {
-                        Log.d("scanner", "Something went wrong with configuring the BarcodeScanner.");
+                        Log.d(LOG_TAG, "Something went wrong with configuring the BarcodeScanner.");
                         return;
                     }
 
@@ -198,7 +200,7 @@ public class BarcodeScanner extends Plugin implements BarcodeCallback {
                         if (formatList.size() > 0) {
                             mBarcodeView.setDecoderFactory(new DefaultDecoderFactory(formatList));
                         } else {
-                            Log.d("scanner", "The property targetedFormats was not set correctly.");
+                            Log.d(LOG_TAG, "The property targetedFormats was not set correctly.");
                         }
                     }
                 }
@@ -209,7 +211,7 @@ public class BarcodeScanner extends Plugin implements BarcodeCallback {
         if (!didRunCameraPrepare) {
             if (hasCamera()) {
                 if (!hasPermission(Manifest.permission.CAMERA)) {
-                    Log.d("scanner", "No permission to use camera. Did you request it yet?");
+                    Log.d(LOG_TAG, "No permission to use camera. Did you request it yet?");
                 } else {
                     shouldRunScan = true;
                     prepare();
@@ -469,5 +471,16 @@ public class BarcodeScanner extends Plugin implements BarcodeCallback {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(call, intent, RESULT_CODE);
         call.resolve();
+    }
+
+    @PluginMethod
+    public void scanClickFocus(PluginCall call) {
+        try {
+            mBarcodeView.manualFocus();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "scanClickFocus" + e.getMessage());
+        } finally {
+            call.resolve();
+        }
     }
 }

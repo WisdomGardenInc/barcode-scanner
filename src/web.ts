@@ -9,7 +9,8 @@ import {
 
 export class BarcodeScannerWeb
   extends WebPlugin
-  implements BarcodeScannerPlugin {
+  implements BarcodeScannerPlugin
+{
   constructor() {
     super({
       name: 'BarcodeScanner',
@@ -44,6 +45,9 @@ export class BarcodeScannerWeb
   }
 
   async openAppSettings(): Promise<void> {
+    throw new Error('method not available in web');
+  }
+  async scanClickFocus(): Promise<void> {
     throw new Error('method not available in web');
   }
 }

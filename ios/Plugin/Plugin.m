@@ -9,4 +9,5 @@ CAP_PLUGIN(BarcodeScanner, "BarcodeScanner",
     CAP_PLUGIN_METHOD(stopScan, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(checkPermission, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(openAppSettings, CAPPluginReturnPromise);
+    CAP_PLUGIN_METHOD(scanClickFocus, CAPPluginReturnPromise);
 )
