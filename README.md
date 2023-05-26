@@ -9,6 +9,15 @@
 Fork from capacitor-community/barcode-scanner of 1.2.1
 Specific usage check [@capacitor-community/barcode-scanner](https://github.com/capacitor-community/barcode-scanner)
 
-## new function
+# v1.1.3
 
-- add scan can zoom
+feat:
+
+- scan manual zoom
+- scan click focus
+
+# v1.1.4
+
+fix:
+
+- fix manual zoom bug
