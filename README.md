@@ -21,3 +21,4 @@ feat:
 fix:
 
 - fix manual zoom bug
+- fix scan scaling speed too fast by android

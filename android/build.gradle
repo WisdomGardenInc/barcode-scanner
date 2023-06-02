@@ -94,6 +94,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation('com.wisdomgarden:zxing-android-embedded:1.2.0') { transitive = false }
+    implementation('com.wisdomgarden:zxing-android-embedded:1.2.1') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
 }
