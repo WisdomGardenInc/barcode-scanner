@@ -22,3 +22,5 @@ fix:
 
 - fix manual zoom bug
 - fix scan scaling speed too fast by android
+
+# The repository has been migrated to [Gitlab](https://gitlab.tronclass.com.cn/lms/barcode-scanner)
